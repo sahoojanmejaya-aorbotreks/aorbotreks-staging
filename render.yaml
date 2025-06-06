@@ -2,7 +2,7 @@ services:
   - type: web
     name: aorbo-website
     env: python
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
     startCommand: "gunicorn aorbo_project.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: SECRET_KEY
@@ -12,7 +12,7 @@ services:
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
-        value: "aorbo-website.onrender.com"
+        value: "aorbotreks.onrender.com"
       - key: DB_NAME
         fromDatabase: 
           name: aorbo-db
