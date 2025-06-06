@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Treks - Aorbo Treks{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Treks Page Styles */
+    .treks-container {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 6rem 5% 4rem;
+    }
+    
+    .treks-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .treks-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .treks-header p {
+        font-size: 1.1rem;
+        color: #666;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    /* Filters Section */
+    .treks-filters {
+        background-color: #f8f8f8;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .filters-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .filter-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: white;
+    }
+    
+    .filter-button {
+        background-color: #FFFF00;
+        color: #333;
+        border: none;
+        border-radius: 5px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1.5rem;
+    }
+    
+    .filter-button:hover {
+        background-color: #4A97FF;
+        color: white;
+    }
+    
+    /* Treks Grid */
+    .treks-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .trek-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .trek-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .trek-image {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .trek-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .trek-difficulty {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0,0,0,0.7);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .trek-content {
+        padding: 1.5rem;
+    }
+    
+    .trek-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .trek-location {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.75rem;
+    }
+    
+    .trek-location svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 0.5rem;
+        fill: #666;
+    }
+    
+    .trek-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    
+    .trek-duration, .trek-organizer {
+        font-size: 0.85rem;
+        color: #666;
+    }
+    
+    .trek-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+    }
+    
+    .price-amount {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+    }
+    
+    .discount-price {
+        font-size: 0.9rem;
+        color: #999;
+        text-decoration: line-through;
+        margin-right: 0.5rem;
+    }
+    
+    .view-trek-btn {
+        background-color: #FFFF00;
+        color: #333;
+        border: none;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .view-trek-btn:hover {
+        background-color: #4A97FF;
+        color: white;
+    }
+    
+    /* Pagination */
+    .pagination {
+        margin-top: 3rem;
+        text-align: center;
+    }
+    
+    .pagination ul {
+        display: inline-flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .pagination li {
+        margin: 0 0.25rem;
+    }
+    
+    .pagination a, .pagination span {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        background-color: #f5f5f5;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination a:hover {
+        background-color: #ddd;
+    }
+    
+    .pagination li.active span {
+        background-color: #4A97FF;
+        color: white;
+    }
+    
+    /* No Treks Message */
+    .no-treks-message {
+        text-align: center;
+        padding: 3rem;
+        background-color: #f8f8f8;
+        border-radius: 10px;
+    }
+    
+    .no-treks-message p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
+        .treks-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .treks-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filters-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-group {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="treks-container">
+    <div class="treks-header">
+        <h1>Explore Our Treks</h1>
+        <p>Discover breathtaking destinations and unforgettable adventures with our curated selection of treks.</p>
+    </div>
+    
+    <div class="treks-filters">
+        <form class="filters-form" method="get" action="{% url 'treks' %}">
+            <div class="filter-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"i" %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="difficulty">Difficulty</label>
+                <select id="difficulty" name="difficulty">
+                    <option value="">All Difficulties</option>
+                    {% for difficulty_value, difficulty_name in difficulty_choices %}
+                    <option value="{{ difficulty_value }}" {% if selected_difficulty == difficulty_value %}selected{% endif %}>
+                        {{ difficulty_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit" class="filter-button">Apply Filters</button>
+        </form>
+    </div>
+    
+    {% if treks %}
+    <div class="treks-grid">
+        {% for trek in treks %}
+        <div class="trek-card">
+            <div class="trek-image">
+                <img src="{{ trek.image.url }}" alt="{{ trek.title }}">
+                <div class="trek-difficulty">{{ trek.get_difficulty_display }}</div>
+            </div>
+            <div class="trek-content">
+                <h2 class="trek-title">{{ trek.title }}</h2>
+                <div class="trek-location">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    {{ trek.location }}
+                </div>
+                <div class="trek-details">
+                    <div class="trek-duration">{{ trek.duration }}</div>
+                    <div class="trek-organizer">By {{ trek.organizer.name }}</div>
+                </div>
+                <p class="trek-description">
+                    {% if trek.short_description %}
+                        {{ trek.short_description }}
+                    {% else %}
+                        {{ trek.description|truncatewords:20 }}
+                    {% endif %}
+                </p>
+                <div class="trek-price">
+                    <div class="price-display">
+                        {% if trek.discount_price %}
+                        <span class="discount-price">₹{{ trek.price }}</span>
+                        <span class="price-amount">₹{{ trek.discount_price }}</span>
+                        {% else %}
+                        <span class="price-amount">₹{{ trek.price }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'trek_detail' trek.slug %}" class="view-trek-btn">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if treks.has_other_pages %}
+    <div class="pagination">
+        <ul>
+            {% if treks.has_previous %}
+                <li><a href="?page={{ treks.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">&laquo; Previous</a></li>
+            {% endif %}
+            
+            {% for num in treks.paginator.page_range %}
+                {% if treks.number == num %}
+                    <li class="active"><span>{{ num }}</span></li>
+                {% else %}
+                    <li><a href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if treks.has_next %}
+                <li><a href="?page={{ treks.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}">Next &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="no-treks-message">
+        <p>No treks found matching your criteria. Please try different filters or check back later.</p>
+        <a href="{% url 'treks' %}" class="filter-button">View All Treks</a>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

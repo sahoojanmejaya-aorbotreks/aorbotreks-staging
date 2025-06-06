@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blogs - Aorbo Treks{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Blog specific styles */
+    .blogs-container {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 6rem 5% 2rem;
+    }
+    
+    .blogs-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 4rem;
+        padding: 0 1rem;
+    }
+    
+    .blog-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .blog-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .blog-image {
+        width: 100%;
+        height: 180px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .blog-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        background: white;
+    }
+    
+    .blog-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    
+    .blog-logo {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    
+    .blog-date {
+        font-size: 0.75rem;
+        color: var(--gray-text);
+    }
+    
+    .blog-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+    
+    .blog-excerpt {
+        font-size: 0.875rem;
+        color: var(--gray-text);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .blog-card.red {
+        background: #ffd2ec;
+    }
+    
+    .blog-card.purple {
+        background: #F8E6FF;
+    }
+
+    .blog-card.blue {
+        background: #E6F4FF;
+    }
+
+    .blog-card.green {
+        background: #E6FFE8;
+    }
+    
+    .blog-card.yellow {
+        background: #fff5d2;
+    }
+    
+    @media (max-width: 1024px) {
+        .blogs-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .blogs-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="blogs-container">
+    <div class="blogs-header">
+        <h1>Blogs</h1>
+    </div>
+
+    <div class="blogs-grid">
+        {% if blogs %}
+            {% for blog in blogs %}
+                <!-- Dynamic Blog Card -->
+                <div class="blog-card {% cycle 'red' 'blue' 'yellow' 'purple' 'green' %}">
+                    <div class="blog-image">
+                        <a href="{% url 'blog_detail' blog.slug %}">
+                            <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <img src="{% static 'images/logo.jpg' %}" alt="Aorbo" class="blog-logo">
+                            <div class="blog-date">{{ blog.created_at|date:"F d, Y" }}</div>
+                        </div>
+                        <h2 class="blog-title">
+                            <a href="{% url 'blog_detail' blog.slug %}" style="text-decoration:none;color:inherit;">
+                                {{ blog.title }}
+                            </a>
+                        </h2>
+                        <p class="blog-excerpt">
+                            {% if blog.excerpt %}
+                                {{ blog.excerpt }}
+                            {% else %}
+                                {{ blog.content|truncatewords:30 }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-blogs-message">
+                <p>No blog posts available at the moment. Check back soon!</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if blogs.has_other_pages %}
+    <div class="pagination">
+        <ul>
+            {% if blogs.has_previous %}
+                <li><a href="?page={{ blogs.previous_page_number }}">&laquo; Previous</a></li>
+            {% endif %}
+            
+            {% for num in blogs.paginator.page_range %}
+                {% if blogs.number == num %}
+                    <li class="active"><span>{{ num }}</span></li>
+                {% else %}
+                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if blogs.has_next %}
+                <li><a href="?page={{ blogs.next_page_number }}">Next &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

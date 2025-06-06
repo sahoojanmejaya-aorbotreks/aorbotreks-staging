@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Aorbo Treks{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-details {
+        display: flex;
+        flex-wrap: wrap; /* Allows wrapping to the next row */
+        gap: 20px; /* Space between boxes */
+        padding: 40px;
+        justify-content: flex-start; /* Center the boxes horizontally */
+    }
+    
+    .contact-box {
+        flex: 1 1 calc(50% - 20px); /* Each box takes 50% of the row minus the gap */
+        max-width: calc(50% - 20px); /* Ensure two boxes per row */
+        min-width: 300px; /* Minimum width for readability */
+        padding: 20px;
+        border-radius: 8px;
+        text-align: left;
+        margin-left: 0; /* Added to ensure left alignment */
+    }
+    
+    .contact-box h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .contact-box p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+    
+    .contact-box address {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 15px;
+        font-style: normal;
+    }
+    
+    .contact-link {
+        font-size: 14px;
+        color: #007bff; /* Blue color for links */
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .contact-link:hover {
+        text-decoration: underline;
+    }
+    
+    .address-link,
+    .phone-link {
+        display: flex;
+        align-items: center;
+        gap: 1px;
+    }
+    
+ 
+    .chat-btn {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+    
+    .chat-btn:hover {
+        background-color: #0056b3;
+    }
+    
+    .arrow {
+        font-size: 16px;
+    }
+    
+    .support-text {
+        font-size: 14px;
+        color: #666;
+        margin-top: 10px;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .contact-box {
+            flex: 1 1 100%; /* Stack boxes vertically on smaller screens */
+            max-width: 100%;
+        }
+    }
+  
+   
+    
+    .contact-group {
+        display: flex;
+        gap: 20px;
+    }
+    
+
+    hr {
+        border: 0;
+        border-top: 2px solid #ddd;
+        width: 100%;
+        margin: 20px auto;
+        height: 0px;
+    }
+    
+    /* Social Media Links Styles */
+    .social-media-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .social-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-3px);
+        background-color: #e0e0e0;
+    }
+    
+    .social-icon {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+    
+    .form-group select {
+        text-align: left; /* Ensure the text is left-aligned */
+        direction: ltr;   /* Ensure dropdown arrow appears on the right */
+        appearance: none; /* Optional: to fully customize dropdown */
+        background-position: right 1rem center; /* Adjust arrow position */
+        padding-right: 2.5rem; /* Give space for arrow */
+    }
+
+    .icon {
+        width: 30px;
+        height:30px;
+    }
+
+    .msg-icon {
+        width: 20px;
+        height:20px;
+        margin-right: 7px;
+    }
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="contact-page">
+    <div class="contact-container">
+        <div class="contact-form-section">
+            <h2>Get answers to your Questions</h2>
+            <br>
+            <form id="contactForm" method="post" action="{% url 'contact_submit' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile" name="mobile" required>
+                </div>
+                <div class="form-group">
+                    <label for="userType">I am a</label>
+                    <select id="userType" name="userType" required>
+                        <option value="" disabled selected>Select one</option>
+                        <option value="Trekker">Trekker</option>
+                        <option value="Trek Organizer">Trek Organizer</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comment">Your Message</label>
+                    <textarea id="comment" name="comment" required></textarea>
+                </div>
+                <div id="form-message" class="form-message" style="display: none;"></div>
+                <center>
+                <button type="submit" class="submit-btn">Submit</button></center>
+            </form>
+        </div>
+        <div class="contact-info-section">
+            <img src="{% static 'images/contact service.jpg' %}" alt="Customer Support" class="support-image">
+        </div>
+    </div>
+    <div class="contact-details">
+        <!-- Group 1: Grievances and Ombudsman -->
+        <div class="contact-group">
+            <div class="contact-box">
+                <h3>Grievances</h3>
+                <p>If you have any concerns or complaints about our services, please reach out to our dedicated grievance team.</p>
+                <a href="mailto:Aorbotreks@gmail.com?subject=Issue Regarding the AorboTreks App" class="contact-link address-link"><img src="{% static 'images/image.png' %}" alt="MESSAGE Icon" class="msg-icon">Send a message</a>
+            </div>
+            <div class="contact-box">
+                <h3>Ombudsman</h3>
+                <p>Reach out to our regulatory authority via message for complaint escalation.</p>
+                <a href="#" class="contact-link">Know More</a>
+            </div>
+        </div>
+    
+        <hr class="separator-line">
+        
+        <!-- Social Media Links -->
+        {% if social_media %}
+        <div class="contact-group">
+            <div class="contact-box">
+                <h3>Connect With Us</h3>
+                <div class="social-media-links">
+                    {% for social in social_media %}
+                        <a href="{{ social.url }}" class="social-link" target="_blank" title="{{ social.name }}">
+                            {% if social.icon %}
+                                <img src="{{ social.icon.url }}" alt="{{ social.name }}" class="social-icon">
+                            {% else %}
+                                <span>{{ social.name }}</span>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+    
+        <!-- Group 2: Registered Address and Customer Support -->
+        <div class="contact-group">
+            <div class="contact-box">
+                <h3>Registered Address</h3>
+                <img src="{% static 'images/map_loc.jpg' %}" alt="Map Icon" style="border-radius:10px">
+                {% if contact_info %}
+                    <address>
+                        {{ contact_info.company_name }}<br>
+                        {{ contact_info.address_line1 }}<br>
+                        {{ contact_info.address_line2 }}<br>
+                        {% if contact_info.registration_number %}
+                            CIN: {{ contact_info.registration_number }}
+                        {% endif %}
+                    </address>
+                    {% if contact_info.map_link %}
+                        <a href="{{ contact_info.map_link }}" class="contact-link address-link" target="_blank">
+                            <img src="{% static 'images/image-1.png' %}" alt="Map Icon" class="icon"> View in Maps
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <address>
+                        AORBO INFOCOM<br>
+                        Sri Krup Market<br>
+                        Malakpet, Hyderabad, India, 500036<br>
+                        CIN: U67190KA2012PTC176031
+                    </address>
+                    <a href="https://maps.app.goo.gl/ZgXJtZU7XJ9BXkaZ9" class="contact-link address-link">
+                        <img src="{% static 'images/image-1.png' %}" alt="Map Icon" class="icon"> View in Maps
+                    </a>
+                {% endif %}
+            </div>
+            <div class="contact-box">
+                <h3>Customer Support</h3>
+                {% if contact_info %}
+                    <p>{{ contact_info.support_description }}</p>
+                    {% if contact_info.whatsapp_number %}
+                        <a href="https://wa.me/{{ contact_info.whatsapp_number }}"><button class="chat-btn">Get Help <span class="arrow">→</span></button></a>
+                    {% endif %}
+                    <p class="support-text">To reach us by phone, tap below</p>
+                    {% if contact_info.phone_number %}
+                        <a href="tel:+{{ contact_info.phone_number }}" class="contact-link phone-link">
+                            <img src="{% static 'images/image-2.png' %}" alt="Phone Icon" class="icon"> Contact Us
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <p>Tap on your Aorbo Treks app Help screen and select a topic for quick assistance.</p>
+                    <p>OR tap below.</p>
+                    <a href="https://wa.me/9398093503"><button class="chat-btn">Get Help <span class="arrow">→</span></button></a>
+                    <p class="support-text">To reach us by phone, tap below</p>
+                    <a href="tel:+919398093503" class="contact-link phone-link">
+                        <img src="{% static 'images/image-2.png' %}" alt="Phone Icon" class="icon"> Contact Us
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    const formMessage = document.getElementById('form-message');
+
+    function showMessage(message, isError = false) {
+        formMessage.textContent = message;
+        formMessage.style.display = 'block';
+        formMessage.style.color = isError ? '#e74c3c' : '#2ecc71';
+        formMessage.style.padding = '10px';
+        formMessage.style.marginBottom = '15px';
+        formMessage.style.borderRadius = '5px';
+        formMessage.style.backgroundColor = isError ? '#fde2e2' : '#d4edda';
+    }
+
+    contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Get the CSRF token from the cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Create form data object
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            mobile: document.getElementById('mobile').value,
+            userType: document.getElementById('userType').value,
+            comment: document.getElementById('comment').value
+        };
+
+        try {
+            const response = await fetch('{% url "contact_submit" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                showMessage('Thank you! Your message has been sent successfully.');
+                contactForm.reset();
+            } else {
+                showMessage('Error: ' + result.error, true);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('Error submitting form. Please try again.', true);
+        }
+    });
+});
+</script>
+{% endblock %}
