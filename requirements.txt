@@ -1,9 +1,4 @@
 Django==5.0.1
 psycopg2-binary
-python-dotenv
-django-environ
-pyOpenSSL
-cryptography>=41.0.5
-django-extensions
-requests==2.31.0
-pyngrok==6.0.0
+gunicorn
+whitenoise
