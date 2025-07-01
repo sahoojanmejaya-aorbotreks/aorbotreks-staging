@@ -27,9 +27,9 @@ import os
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here-1234567890')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+DEBUG  = 'False'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'https://aorbotreks.com/,localhost,127.0.0.1,aorbotreks.onrender.com').split(',')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'aorbotreks.com,localhost,127.0.0.1,aorbotreks.onrender.com').split(',')
 
 
 # Security settings for HTTPS
