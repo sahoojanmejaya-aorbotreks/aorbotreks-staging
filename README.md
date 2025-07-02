@@ -97,7 +97,7 @@ This website was converted from a static HTML/CSS/JS website to a Django-based w
 
 ## Admin Interface
 
-Access the admin interface at `http://localhost:8000/suppersecretadmin` using the superuser credentials you created.
+Access the admin interface at `http://localhost:8000/supersecretadmin/` using the superuser credentials you created.
 
 ## Security Enhancements
 
