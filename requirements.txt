@@ -7,3 +7,4 @@ python-decouple
 django-cors-headers
 djangorestframework-simplejwt
 PyJWT<2.10.0
+django-csp
