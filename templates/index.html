@@ -220,7 +220,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="testimonial-text">"{{ testimonial.comment }}"</p>
+                            <p class="testimonial-text">"{{ testimonial.comment|escape }}"</p>
                             {% if testimonial.trek %}
                                 <p class="testimonial-trek">Trek: <a href="{% url 'trek_detail' testimonial.trek.slug %}">{{ testimonial.trek.name }}</a></p>
                             {% endif %}

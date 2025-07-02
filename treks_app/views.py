@@ -1,8 +1,49 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 import json
+from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+
+@api_view(['POST'])
+@throttle_classes([AnonRateThrottle, UserRateThrottle])
+def contact_submit(request):
+    try:
+        # Get data from POST request
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            name = data.get('name')
+            email = data.get('email')
+            mobile = data.get('mobile')
+            user_type = data.get('userType')
+            comment = data.get('comment')
+        else:
+            # Handle form data
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            mobile = request.POST.get('mobile')
+            user_type = request.POST.get('userType')
+            comment = request.POST.get('comment')
+        
+        # Validate required fields
+        if not all([name, email, mobile, comment]):
+            return JsonResponse({'error': 'All fields are required'}, status=400)
+            
+        # Create a new Contact object
+        contact = Contact(
+            name=name,
+            email=email,
+            mobile=mobile,
+            user_type=user_type,
+            comment=comment
+        )
+        contact.save()
+        
+        return JsonResponse({'message': 'Contact form submitted successfully'}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 from .models import (
     Contact, Blog, TrekCategory, TrekOrganizer, Trek, 
     Testimonial, FAQ, SafetyTip, TeamMember, HomepageBanner,
@@ -132,83 +173,9 @@ def contact(request):
 def privacy_policy(request):
     return render(request, 'privacypolicy.html')
 
-@require_POST
-def contact_submit(request):
-    try:
-        # Get data from POST request
-        if request.content_type == 'application/json':
-            data = json.loads(request.body)
-            name = data.get('name')
-            email = data.get('email')
-            mobile = data.get('mobile')
-            user_type = data.get('userType')
-            comment = data.get('comment')
-        else:
-            # Handle form data
-            name = request.POST.get('name')
-            email = request.POST.get('email')
-            mobile = request.POST.get('mobile')
-            user_type = request.POST.get('userType')
-            comment = request.POST.get('comment')
-        
-        # Validate required fields
-        if not all([name, email, mobile, comment]):
-            return JsonResponse({'error': 'All fields are required'}, status=400)
-            
-        # Create a new Contact object
-        contact = Contact(
-            name=name,
-            email=email,
-            mobile=mobile,
-            user_type=user_type,
-            comment=comment
-        )
-        contact.save()
-        
-        return JsonResponse({'message': 'Contact form submitted successfully'}, status=200)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
 
-@require_POST
-def contact_submit(request):
-    try:
-        # Get data from POST request
-        if request.content_type == 'application/json':
-            data = json.loads(request.body)
-            name = data.get('name')
-            email = data.get('email')
-            mobile = data.get('mobile')
-            user_type = data.get('userType')
-            comment = data.get('comment')
-        else:
-            # Handle form data
-            name = request.POST.get('name')
-            email = request.POST.get('email')
-            mobile = request.POST.get('mobile')
-            user_type = request.POST.get('userType')
-            comment = request.POST.get('comment')
-        
-        # Validate required fields
-        if not all([name, email, mobile, comment]):
-            return JsonResponse({'error': 'All fields are required'}, status=400)
-            
-        # Create a new Contact object
-        contact = Contact(
-            name=name,
-            email=email,
-            mobile=mobile,
-            user_type=user_type,
-            comment=comment
-        )
-        contact.save()
-        
-        return JsonResponse({'message': 'Contact form submitted successfully'}, status=200)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+
+
     
 
 

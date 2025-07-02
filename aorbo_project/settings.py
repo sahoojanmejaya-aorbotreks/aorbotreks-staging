@@ -45,6 +45,10 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    REFERRER_POLICY = 'strict-origin'
+
+
 
 
 # Application definition
@@ -59,6 +63,9 @@ INSTALLED_APPS = [
     'django_extensions',  # Required for runserver_plus
     'whitenoise.runserver_nostatic', # For WhiteNoise
     'corsheaders',
+    'rest_framework',
+    'csp',
+    'axes',
 
     'treks_app',
 ]
@@ -73,7 +80,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
+
+# Django-Axes settings for rate limiting
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1 # 1 hour
+AXES_LOCKOUT_TEMPLATE = 'registration/lockout.html'
+AXES_LOCKOUT_URL = '/locked/'
+
+AXES_IP_WHITELIST = []
+AXES_ENABLE_ACCESS_LOG = True
+
 
 ROOT_URLCONF = 'aorbo_project.urls'
 
@@ -122,6 +141,11 @@ if not DEBUG and 'runserver' not in sys.argv:
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -138,6 +162,18 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Password Reset Customization
+PASSWORD_RESET_FORM = 'treks_app.forms.CustomPasswordResetForm'
+
+# Email settings for password reset
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Use ConsoleBackend for development
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # Use this for production
+# EMAIL_HOST = 'your_smtp_host'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your_email'
+# EMAIL_HOST_PASSWORD = 'your_email_password'
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -150,11 +186,12 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+# Password Reset Templates
+# These templates need to be created in your templates directory
+# For example: templates/registration/password_reset_email.html
+# For example: templates/registration/password_reset_subject.txt
 
-# Static files configuration
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
@@ -171,6 +208,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+
+
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOWED_ORIGINS = [
     "https://aorbotreks.com",
@@ -178,3 +217,77 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }
+}
+
+# CSP settings
+CONTENT_SECURITY_POLICY = {
+    'DIRECTIVES': {
+        'base-uri': ("'self'",),
+        'connect-src': (
+            "'self'",
+            'https://aorbotreks.com',
+            'https://www.aorbotreks.com',
+        ),
+        'default-src': (
+            "'self'",
+            "'unsafe-inline'",
+            "'unsafe-eval'",
+            'https://fonts.googleapis.com',
+            'https://fonts.gstatic.com',
+            'https://cdn.jsdelivr.net',
+            'https://aorbotreks.com',
+            'https://www.aorbotreks.com',
+        ),
+        'font-src': (
+            "'self'",
+            'https://fonts.gstatic.com',
+            'https://aorbotreks.com',
+            'https://www.aorbotreks.com',
+        ),
+        'form-action': ("'self'",),
+        'frame-ancestors': ("'self'",),
+        'img-src': (
+            "'self'",
+            'data:',
+            'https://aorbotreks.com',
+            'https://www.aorbotreks.com',
+        ),
+        'object-src': ("'none'",),
+        'script-src': (
+            "'self'",
+            "'unsafe-inline'",
+            "'unsafe-eval'",
+            'https://cdn.jsdelivr.net',
+            'https://aorbotreks.com',
+            'https://www.aorbotreks.com',
+        ),
+        'style-src': (
+            "'self'",
+            "'unsafe-inline'",
+            'https://fonts.googleapis.com',
+            'https://cdn.jsdelivr.net',
+            'https://aorbotreks.com',
+            'https://www.aorbotreks.com',
+        ),
+    }
+}
+
+
+
+
+SIMPLE_JWT = {
+    'TOKEN_OBTAIN_PAIR_SERIALIZER': 'aorbo_project.serializers.MyTokenObtainPairSerializer',
+}
