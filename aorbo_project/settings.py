@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG  = 'True'
 
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1,aorbotreks.com,aorbotreks.onrender.com').split(',')
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1,aorbotreks.com,aorbotreks.onrender.com,aorbotreks-staging.onrender.com').split(',')
 
 
 # Security settings for HTTPS
@@ -215,6 +215,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.aorbotreks.com",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "aorbotreks-staging.onrender.com",
+
 ]
 
 REST_FRAMEWORK = {
@@ -239,6 +241,7 @@ CONTENT_SECURITY_POLICY = {
             "'self'",
             'https://aorbotreks.com',
             'https://www.aorbotreks.com',
+            "aorbotreks-staging.onrender.com",
         ),
         'default-src': (
             "'self'",
@@ -249,12 +252,14 @@ CONTENT_SECURITY_POLICY = {
             'https://cdn.jsdelivr.net',
             'https://aorbotreks.com',
             'https://www.aorbotreks.com',
+            "aorbotreks-staging.onrender.com",
         ),
         'font-src': (
             "'self'",
             'https://fonts.gstatic.com',
             'https://aorbotreks.com',
             'https://www.aorbotreks.com',
+            "aorbotreks-staging.onrender.com",
         ),
         'form-action': ("'self'",),
         'frame-ancestors': ("'self'",),
@@ -263,7 +268,9 @@ CONTENT_SECURITY_POLICY = {
             'data:',
             'https://aorbotreks.com',
             'https://www.aorbotreks.com',
-            "https://xsconhhzyaiowokwsqne.supabase.co",
+            # "https://xsconhhzyaiowokwsqne.supabase.co",
+            "https://abncmjlzektkdbhgrohc.supabase.co",
+            "aorbotreks-staging.onrender.com",
         ),
         'object-src': ("'none'",),
         'script-src': (
@@ -273,6 +280,7 @@ CONTENT_SECURITY_POLICY = {
             'https://cdn.jsdelivr.net',
             'https://aorbotreks.com',
             'https://www.aorbotreks.com',
+            "aorbotreks-staging.onrender.com",
         ),
         'style-src': (
             "'self'",
@@ -281,6 +289,7 @@ CONTENT_SECURITY_POLICY = {
             'https://cdn.jsdelivr.net',
             'https://aorbotreks.com',
             'https://www.aorbotreks.com',
+            "aorbotreks-staging.onrender.com",
         ),
     }
 }
