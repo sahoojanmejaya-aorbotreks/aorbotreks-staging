@@ -4,6 +4,9 @@ from django.core.paginator import Paginator
 import json
 from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+from django.shortcuts import render
+
+
 
 @api_view(['POST'])
 @throttle_classes([AnonRateThrottle, UserRateThrottle])
@@ -53,16 +56,15 @@ from .models import (
 
 # Create your views here.
 def home(request):
-    # Get featured content for homepage
     featured_treks = Trek.objects.filter(is_featured=True)[:6]
     featured_testimonials = Testimonial.objects.filter(is_featured=True)[:6]
     featured_blogs = Blog.objects.filter(is_featured=True)[:3]
     banners = HomepageBanner.objects.filter(is_active=True).order_by('order')
     faqs = FAQ.objects.all().order_by('category', 'order')
     whats_new = WhatsNew.objects.all().order_by('-created_at')[:5]
-    top_treks = TopTrek.objects.all()[:5]
+    top_treks = TopTrek.objects.all()[:]
+
     
-    # Group FAQs by category
     faq_categories = {}
     for faq in faqs:
         if faq.category not in faq_categories:
@@ -79,6 +81,17 @@ def home(request):
         'top_treks': top_treks,
     }
     return render(request, 'index.html', context)
+
+# def home(request):
+#     whats_new = WhatsNew.objects.all().order_by('-created_at')[:5]
+#     top_treks = TopTrek.objects.all()[:]
+
+#     context = {
+#         'whats_new': whats_new,
+#         'top_treks': top_treks,
+#     }
+#     return render(request, 'test.html', context)
+
 
 def about(request):
     team_members = TeamMember.objects.all().order_by('order')
@@ -172,12 +185,10 @@ def contact(request):
 
 def privacy_policy(request):
     return render(request, 'privacypolicy.html')
-
-
-
-
-    
-
+def terms_and_conditions(request):
+    return render(request, 'terms_and_conditions.html')
+def user_agreement(request):
+    return render(request, 'user_agreement.html')
 
 def index(request):
     whats_new = WhatsNew.objects.all().order_by('-date_posted')[:3]

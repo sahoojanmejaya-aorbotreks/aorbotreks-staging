@@ -23,12 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-import os
 
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG  = 'False'
+DEBUG  = 'True'
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1,aorbotreks.com,aorbotreks.onrender.com').split(',')
 
@@ -66,7 +65,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'csp',
     'axes',
-
+    
     'treks_app',
 ]
 
@@ -264,6 +263,7 @@ CONTENT_SECURITY_POLICY = {
             'data:',
             'https://aorbotreks.com',
             'https://www.aorbotreks.com',
+            "https://xsconhhzyaiowokwsqne.supabase.co",
         ),
         'object-src': ("'none'",),
         'script-src': (
@@ -285,8 +285,10 @@ CONTENT_SECURITY_POLICY = {
     }
 }
 
-
-
+# Add localhost entries only in DEBUG mode
+if DEBUG:
+    for directive in ["script-src", "style-src", "img-src", "font-src", "connect-src"]:
+        CONTENT_SECURITY_POLICY["DIRECTIVES"][directive] += ("http://localhost:8000",)
 
 SIMPLE_JWT = {
     'TOKEN_OBTAIN_PAIR_SERIALIZER': 'aorbo_project.serializers.MyTokenObtainPairSerializer',

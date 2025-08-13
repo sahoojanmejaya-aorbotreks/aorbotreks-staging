@@ -4,124 +4,155 @@
 {% block title %}Blogs - Aorbo Treks{% endblock %}
 
 {% block extra_css %}
+
+
 <style>
-    /* Blog specific styles */
     .blogs-container {
         max-width: 1440px;
         margin: 0 auto;
-        padding: 6rem 5% 2rem;
+        padding: 5rem 4% 2rem;
     }
-    
-    .blogs-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
-        margin-bottom: 4rem;
-        padding: 0 1rem;
+
+    .blogs-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 1.5rem;
+        padding-bottom: 1.5rem;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
     }
-    
+
+    .blogs-scroll::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+
     .blog-card {
-        background: white;
-        border-radius: 16px;
+        min-width: 280px;
+        max-width: 280px;
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        border-radius: 14px;
         overflow: hidden;
         transition: transform 0.3s ease;
-        height: 100%;
         display: flex;
         flex-direction: column;
+        background: transparent;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.08);
     }
-    
+
     .blog-card:hover {
         transform: translateY(-5px);
     }
-    
+
     .blog-image {
         width: 100%;
-        height: 180px;
-        position: relative;
+        height: 160px;
         overflow: hidden;
     }
-    
+
     .blog-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
-    
+
     .blog-content {
-        padding: 1.5rem;
-        flex-grow: 1;
+        padding: 1rem;
         display: flex;
         flex-direction: column;
         background: white;
+        border-radius: 0 0 14px 14px;
     }
-    
+
     .blog-meta {
         display: flex;
         align-items: center;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
     }
-    
+
     .blog-logo {
-        width: 24px;
-        height: 24px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         margin-right: 0.5rem;
     }
-    
+
     .blog-date {
-        font-size: 0.75rem;
-        color: var(--gray-text);
+        font-size: 0.7rem;
+        color: #666;
     }
-    
+
     .blog-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
-        color: var(--text-color);
-        margin-bottom: 0.75rem;
-        line-height: 1.4;
+        color: #333;
+        margin-bottom: 0.5rem;
+        line-height: 15px;
     }
-    
+
     .blog-excerpt {
-        font-size: 0.875rem;
-        color: var(--gray-text);
-        line-height: 1.6;
-        margin-bottom: 1rem;
+        font-size:15px!important;
+        color: #555;
+        line-height: 1.5;
         -webkit-line-clamp: 3;
         line-clamp: 3;
         display: -webkit-box;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    
-    .blog-card.red {
-        background: #ffd2ec;
-    }
-    
-    .blog-card.purple {
-        background: #F8E6FF;
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        padding: 2rem 0;
     }
 
-    .blog-card.blue {
-        background: #E6F4FF;
+    .pagination ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 0.5rem;
     }
 
-    .blog-card.green {
-        background: #E6FFE8;
-    }
-    
-    .blog-card.yellow {
-        background: #fff5d2;
-    }
-    
-    @media (max-width: 1024px) {
-        .blogs-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    .pagination li {
+        display: inline;
     }
 
-    @media (max-width: 640px) {
-        .blogs-grid {
-            grid-template-columns: 1fr;
+    .pagination a,
+    .pagination span {
+        padding: 0.4rem 0.65rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        color: #0d6efd;
+        font-size: 0.9rem;
+    }
+
+    .pagination .active span {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .no-blogs-message {
+        text-align: center;
+        padding: 3rem;
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 1.75rem; } /* ~28px */
+        h2 { font-size: 1.5rem; }  /* ~24px */
+        h3 { font-size: 1.25rem; } /* ~20px */
+        h4 { font-size: 1.125rem; } /* ~18px */
+        h5 { font-size: 1rem; }    /* ~16px */
+        h6 { font-size: 0.875rem; }/* ~14px */
+        p  { font-size: 0.875rem; }/* ~14px */
+
+        .blog-excerpt {
+            display: none;
         }
     }
 </style>
@@ -129,15 +160,14 @@
 
 {% block content %}
 <main class="blogs-container">
-    <div class="blogs-header">
-        <h1>Blogs</h1>
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Blogs</h1>
     </div>
 
-    <div class="blogs-grid">
-        {% if blogs %}
+    {% if blogs %}
+        <div class="blogs-scroll">
             {% for blog in blogs %}
-                <!-- Dynamic Blog Card -->
-                <div class="blog-card {% cycle 'red' 'blue' 'yellow' 'purple' 'green' %}">
+                <div class="blog-card">
                     <div class="blog-image">
                         <a href="{% url 'blog_detail' blog.slug %}">
                             <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
@@ -145,7 +175,7 @@
                     </div>
                     <div class="blog-content">
                         <div class="blog-meta">
-                            <img src="{% static 'images/logo.jpg' %}" alt="Aorbo" class="blog-logo">
+                            <img src="{% static 'images/R-logo.png' %}" alt="Aorbo" class="blog-logo">
                             <div class="blog-date">{{ blog.created_at|date:"F d, Y" }}</div>
                         </div>
                         <h2 class="blog-title">
@@ -163,34 +193,33 @@
                     </div>
                 </div>
             {% endfor %}
-        {% else %}
-            <div class="no-blogs-message">
-                <p>No blog posts available at the moment. Check back soon!</p>
-            </div>
-        {% endif %}
-    </div>
-    
-    <!-- Pagination -->
+        </div>
+    {% else %}
+        <div class="no-blogs-message">
+            <p>No blog posts available at the moment. Check back soon!</p>
+        </div>
+    {% endif %}
+
     {% if blogs.has_other_pages %}
-    <div class="pagination">
-        <ul>
-            {% if blogs.has_previous %}
-                <li><a href="?page={{ blogs.previous_page_number }}">&laquo; Previous</a></li>
-            {% endif %}
-            
-            {% for num in blogs.paginator.page_range %}
-                {% if blogs.number == num %}
-                    <li class="active"><span>{{ num }}</span></li>
-                {% else %}
-                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+        <div class="pagination">
+            <ul>
+                {% if blogs.has_previous %}
+                    <li><a href="?page={{ blogs.previous_page_number }}">&laquo; Previous</a></li>
                 {% endif %}
-            {% endfor %}
-            
-            {% if blogs.has_next %}
-                <li><a href="?page={{ blogs.next_page_number }}">Next &raquo;</a></li>
-            {% endif %}
-        </ul>
-    </div>
+
+                {% for num in blogs.paginator.page_range %}
+                    {% if blogs.number == num %}
+                        <li class="active"><span>{{ num }}</span></li>
+                    {% else %}
+                        <li><a href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if blogs.has_next %}
+                    <li><a href="?page={{ blogs.next_page_number }}">Next &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </div>
     {% endif %}
 </main>
 {% endblock %}

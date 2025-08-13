@@ -4,6 +4,9 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 import bleach
+import uuid
+import mimetypes
+from .supabase_client import supabase
 
 def validate_image_file_extension(value):
     import os
@@ -245,23 +248,59 @@ class ContactInfo(models.Model):
     def __str__(self):
         return self.company_name
 
-# models.py
 class WhatsNew(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    image = models.ImageField(upload_to='whatsnew/', blank=True, null=True)
+    image = models.ImageField(upload_to="whatsnew/", blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.title
+    def save(self, *args, **kwargs):
+        if self.image and not self.image_url:
+            file_content = self.image.read()
+            file_ext = self.image.name.split('.')[-1]
+            file_name = f"{uuid.uuid4()}.{file_ext}"
+
+            # Detect MIME type
+            mime_type, _ = mimetypes.guess_type(self.image.name)
+            if not mime_type:
+                mime_type = "application/octet-stream"  # fallback
+
+            bucket = supabase.storage.from_("blogs/whatsnew")
+            bucket.upload(file_name, file_content, {"content-type": mime_type})
+            self.image_url = bucket.get_public_url(file_name)
+
+            # Remove local file from Django storage
+            self.image.delete(save=False)
+
+        super().save(*args, **kwargs)
+
 
 class TopTrek(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(upload_to='toptreks/')
+    image = models.ImageField(upload_to="toptreks/", blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if self.image and not self.image_url:
+            file_content = self.image.read()
+            file_ext = self.image.name.split('.')[-1]
+            file_name = f"{uuid.uuid4()}.{file_ext}"
+
+            # Detect MIME type
+            mime_type, _ = mimetypes.guess_type(self.image.name)
+            if not mime_type:
+                mime_type = "application/octet-stream"
+
+            bucket = supabase.storage.from_("blogs/toptreks")
+            bucket.upload(file_name, file_content, {"content-type": mime_type})
+            self.image_url = bucket.get_public_url(file_name)
+
+            self.image.delete(save=False)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-
-

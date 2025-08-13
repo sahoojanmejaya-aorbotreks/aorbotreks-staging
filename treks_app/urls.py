@@ -7,6 +7,8 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+     path('terms-and-conditions/', views.terms_and_conditions, name='terms_and_conditions'),
+    path('user-agreement/', views.user_agreement, name='user_agreement'),
     path('safety/', views.safety, name='safety'),
     
     # Blog pages
