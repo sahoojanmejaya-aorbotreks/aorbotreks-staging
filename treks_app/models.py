@@ -55,6 +55,7 @@ class Blog(models.Model):
     content = models.TextField()
     excerpt = models.TextField(max_length=300, blank=True, help_text="Short description for blog listings")
     image = models.ImageField(upload_to='blogs/', validators=[validate_image_file_extension])
+    image_url = models.URLField(blank=True, null=True, editable=False)
     author = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)

@@ -9,4 +9,6 @@ djangorestframework-simplejwt
 PyJWT<2.10.0
 django-csp
 django-axes
+supabase
+pillow
 bleach>=6.0.0
