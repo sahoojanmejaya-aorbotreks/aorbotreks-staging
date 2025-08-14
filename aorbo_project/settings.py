@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG  = 'True'
 
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1,aorbotreks.com,aorbotreks.onrender.com,aorbotreks-staging.onrender.com').split(',')
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1,aorbotreks.com,aorbotreks-staging.onrender.com').split(',')
 
 
 # Security settings for HTTPS

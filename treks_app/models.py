@@ -51,29 +51,46 @@ class Contact(models.Model):
 
 class Blog(models.Model):
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True)
     content = models.TextField()
     excerpt = models.TextField(max_length=300, blank=True, help_text="Short description for blog listings")
-    image = models.ImageField(upload_to='blogs/', validators=[validate_image_file_extension])
+    image = models.ImageField(upload_to='blogs/', validators=[validate_image_file_extension], blank=True, null=True)
     image_url = models.URLField(blank=True, null=True, editable=False)
     author = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     is_featured = models.BooleanField(default=False)
-    
+
     class Meta:
         ordering = ['-created_at']
-    
-    def __str__(self):
-        return self.title
-    
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
+        bucket, folder = supabase.storage.from_("blogs"), "blogs"
+        if self.image:
+            ext = self.image.name.split('.')[-1]
+            file_name = f"{uuid.uuid4()}.{ext}"
+            path = f"{folder}/{file_name}"
+            mime, _ = mimetypes.guess_type(self.image.name)
+            if not mime:
+                mime = "application/octet-stream"
+            bucket.upload(path, self.image.read(), {"content-type": mime})
+            self.image_url = bucket.get_public_url(path)
+            self.image.name = file_name  
+
+        elif not self.image and self.image_url:
+            base_url = bucket.get_public_url("").rstrip("/") + "/"
+            file_path = self.image_url.replace(base_url, "", 1)
+            bucket.remove([file_path])
+            self.image = None
+            self.image_url = None
         super().save(*args, **kwargs)
-    
     def get_absolute_url(self):
         return reverse('blog_detail', kwargs={'slug': self.slug})
+    
+    def __str__(self):
+        return self.title
 
 class TrekCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -257,24 +274,26 @@ class WhatsNew(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if self.image and not self.image_url:
-            file_content = self.image.read()
-            file_ext = self.image.name.split('.')[-1]
-            file_name = f"{uuid.uuid4()}.{file_ext}"
-
-            # Detect MIME type
-            mime_type, _ = mimetypes.guess_type(self.image.name)
-            if not mime_type:
-                mime_type = "application/octet-stream"  # fallback
-
-            bucket = supabase.storage.from_("blogs/whatsnew")
-            bucket.upload(file_name, file_content, {"content-type": mime_type})
-            self.image_url = bucket.get_public_url(file_name)
-
-            # Remove local file from Django storage
-            self.image.delete(save=False)
-
+        bucket, folder = supabase.storage.from_("blogs"), "whatsnew"
+        if self.image:
+            ext = self.image.name.split('.')[-1]
+            file_name = f"{uuid.uuid4()}.{ext}"
+            path = f"{folder}/{file_name}"
+            mime, _ = mimetypes.guess_type(self.image.name)
+            if not mime:
+                mime = "application/octet-stream"
+            bucket.upload(path, self.image.read(), {"content-type": mime})
+            self.image_url = bucket.get_public_url(path)
+            self.image.name = file_name  
+        elif not self.image and self.image_url:
+            base_url = bucket.get_public_url("").rstrip("/") + "/"
+            file_path = self.image_url.replace(base_url, "", 1)
+            bucket.remove([file_path])
+            self.image = None
+            self.image_url = None
         super().save(*args, **kwargs)
+    def __str__(self):
+        return self.title
 
 
 class TopTrek(models.Model):
@@ -285,21 +304,21 @@ class TopTrek(models.Model):
     image_url = models.URLField(blank=True, null=True, editable=False)
 
     def save(self, *args, **kwargs):
-        if self.image and not self.image_url:
-            file_content = self.image.read()
-            file_ext = self.image.name.split('.')[-1]
-            file_name = f"{uuid.uuid4()}.{file_ext}"
-
-            # Detect MIME type
-            mime_type, _ = mimetypes.guess_type(self.image.name)
-            if not mime_type:
-                mime_type = "application/octet-stream"
-
-            bucket = supabase.storage.from_("blogs/toptreks")
-            bucket.upload(file_name, file_content, {"content-type": mime_type})
-            self.image_url = bucket.get_public_url(file_name)
-
-            self.image.delete(save=False)
+        bucket, folder = supabase.storage.from_("blogs"), "toptreks"
+        if self.image:
+            ext = self.image.name.split('.')[-1]
+            file_name = f"{uuid.uuid4()}.{ext}"
+            path = f"{folder}/{file_name}"
+            mime, _ = mimetypes.guess_type(self.image.name)
+            if not mime:
+                mime = "application/octet-stream"
+            bucket.upload(path, self.image.read(), {"content-type": mime})
+            self.image_url = bucket.get_public_url(path)
+        elif not self.image and self.image_url:
+            base = bucket.get_public_url("").rstrip("/") + "/"
+            bucket.remove([self.image_url.replace(base, "", 1)])
+            self.image = None
+            self.image_url = None
 
         super().save(*args, **kwargs)
 

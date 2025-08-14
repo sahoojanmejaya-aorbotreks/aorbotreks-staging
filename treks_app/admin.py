@@ -5,8 +5,31 @@ from .models import (
     Testimonial, FAQ, SafetyTip, TeamMember, HomepageBanner,
     SocialMedia, ContactInfo,WhatsNew, TopTrek)
 
-admin.site.register(WhatsNew)
-admin.site.register(TopTrek)
+@admin.register(WhatsNew)
+class WhatsNewAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created_at', 'image_preview')
+    readonly_fields = ('image_preview',)
+    fields = ('title', 'content', 'image', 'image_preview', 'created_at')
+    readonly_fields = ('image_preview', 'created_at')
+
+    def image_preview(self, obj):
+        if obj.image_url:
+            return format_html('<img src="{}" width="100" />', obj.image_url)
+        return "No image"
+    image_preview.short_description = "Image Preview"
+
+@admin.register(TopTrek)    
+class TopTrekAdmin(admin.ModelAdmin):
+    list_display = ('name', 'location', 'image_preview')
+    readonly_fields = ('image_preview',)
+    fields = ('name', 'location', 'description', 'image', 'image_preview')
+
+    def image_preview(self, obj):
+        if obj.image_url:
+            return format_html('<img src="{}" width="100" />', obj.image_url)
+        return "No image"
+    image_preview.short_description = "Image Preview"
+
 
 # Register your models here.
 @admin.register(Contact)
