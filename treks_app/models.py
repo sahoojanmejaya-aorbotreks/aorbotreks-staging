@@ -26,7 +26,7 @@ def validate_image_file_extension(value):
     except Exception as e:
         raise ValidationError(f"Could not determine file type: {e}")
 
-    allowed_mime_types = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
+    allowed_mime_types = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml','image/webp']
     if mime_type not in allowed_mime_types:
         raise ValidationError(f'Unsupported file type. Detected: {mime_type}. Allowed types are: ' + ', '.join(allowed_mime_types))
 
