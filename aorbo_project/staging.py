@@ -9,7 +9,8 @@ ALLOWED_HOSTS = [
     "staging.aorbotreks.com",
     "localhost",
     "127.0.0.1",
-    "[::1]"  # IPv6 localhost
+    "https://aorbotreks-staging.onrender.com",
+    "[::1]",  # IPv6 localhost
 ]
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
