@@ -14,7 +14,7 @@ def validate_image_file_extension(value):
     from django.conf import settings
 
     ext = os.path.splitext(value.name)[1]
-    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg']
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg','.webp']
     if not ext.lower() in valid_extensions:
         raise ValidationError('Unsupported file extension. Allowed extensions are: ' + ', '.join(valid_extensions))
 
