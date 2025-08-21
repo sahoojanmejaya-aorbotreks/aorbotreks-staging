@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from django.shortcuts import render
 from django.utils import timezone
+from django.utils.text import Truncator
 
 
 
@@ -189,11 +190,50 @@ def about(request):
 #     return render(request, "blog_detail.html", {"blog": blog, "seo": seo})
     
 
+# def blogs(request):
+#     all_blogs = Blog.objects.all().order_by('-created_at')
+#     paginator = Paginator(all_blogs, 9)
+#     page_number = request.GET.get('page')
+#     blogs_page = paginator.get_page(page_number)
+
+#     seo = {
+#         "title": "Blogs | Aorbo Treks",
+#         "description": "Read travel blogs, trekking guides, and adventure stories by Aorbo Treks.",
+#         "keywords": "trekking, blogs, adventure, travel, hiking",
+#         "image": request.build_absolute_uri("/static/images/default-blog.jpg"),  # ✅ absolute
+#         "url": request.build_absolute_uri(),  # ✅ absolute full URL (with domain)
+#         "author": "Aorbo Treks",
+#         "published": blogs_page[0].created_at if blogs_page else None,
+#         "updated": blogs_page[0].updated_at if blogs_page else None,
+#     }
+
+#     return render(request, "blogs.html", {"blogs": blogs_page, "seo": seo})
+
+# def blog_detail(request, slug):
+#     blog = get_object_or_404(Blog, slug=slug)
+
+#     seo = {
+#         "title": blog.meta_title or blog.title,
+#         "description": blog.meta_description or (blog.excerpt[:150] if blog.excerpt else blog.content[:150]),
+#         "keywords": blog.meta_keywords or f"trekking, travel, adventure, {blog.title}",
+#         "image": request.build_absolute_uri(blog.image.url) if blog.image else request.build_absolute_uri("/static/images/default-blog.jpg"),  # ✅ absolute
+#         "url": request.build_absolute_uri(blog.get_absolute_url()),  # ✅ absolute
+#         "author": getattr(blog, "author", "Aorbo Treks"),
+#         "published": blog.created_at,
+#         "updated": getattr(blog, "updated_at", blog.created_at),
+#     }
+
+#     return render(request, "blog_detail.html", {"blog": blog, "seo": seo})
+
+
 def blogs(request):
     all_blogs = Blog.objects.all().order_by('-created_at')
     paginator = Paginator(all_blogs, 9)
     page_number = request.GET.get('page')
     blogs_page = paginator.get_page(page_number)
+
+    # Safely pick first blog for published/updated dates (if exists)
+    first_blog = blogs_page.object_list[0] if blogs_page.object_list else None
 
     seo = {
         "title": "Blogs | Aorbo Treks",
@@ -202,8 +242,8 @@ def blogs(request):
         "image": request.build_absolute_uri("/static/images/default-blog.jpg"),  # ✅ absolute
         "url": request.build_absolute_uri(),  # ✅ absolute full URL (with domain)
         "author": "Aorbo Treks",
-        "published": blogs_page[0].created_at if blogs_page else None,
-        "updated": blogs_page[0].updated_at if blogs_page else None,
+        "published": first_blog.created_at if first_blog else None,
+        "updated": getattr(first_blog, "updated_at", None) if first_blog else None,
     }
 
     return render(request, "blogs.html", {"blogs": blogs_page, "seo": seo})
@@ -213,17 +253,16 @@ def blog_detail(request, slug):
 
     seo = {
         "title": blog.meta_title or blog.title,
-        "description": blog.meta_description or (blog.excerpt[:150] if blog.excerpt else blog.content[:150]),
+        "description": blog.meta_description or Truncator(blog.excerpt or blog.content).chars(150),
         "keywords": blog.meta_keywords or f"trekking, travel, adventure, {blog.title}",
         "image": request.build_absolute_uri(blog.image.url) if blog.image else request.build_absolute_uri("/static/images/default-blog.jpg"),  # ✅ absolute
         "url": request.build_absolute_uri(blog.get_absolute_url()),  # ✅ absolute
-        "author": getattr(blog, "author", "Aorbo Treks"),
+        "author": getattr(getattr(blog, "author", None), "name", "Aorbo Treks"),  # ✅ handles relation or fallback
         "published": blog.created_at,
         "updated": getattr(blog, "updated_at", blog.created_at),
     }
 
     return render(request, "blog_detail.html", {"blog": blog, "seo": seo})
-
 
 
 def treks(request):
