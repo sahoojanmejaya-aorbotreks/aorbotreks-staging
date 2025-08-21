@@ -11,7 +11,7 @@
 
 
 
-@font-face {
+/* @font-face {
   font-family: 'Poppins';
   src: url('/fonts/Poppins-Regular.ttf') format('truetype');
   font-weight: 400;
@@ -39,6 +39,15 @@
 :root {
     --card-width: 260px;
     --card-gap: 1rem;
+} */
+
+:root {
+    --card-width: 260px;
+    --card-gap: 1rem;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Scroll wrapper (flex with horizontal scroll) */

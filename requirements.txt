@@ -43,5 +43,7 @@ webencodings==0.5.1
 websockets==15.0.1
 whitenoise==6.9.0
 python-magic
+django-ckeditor-5
+django-ckeditor
 
 

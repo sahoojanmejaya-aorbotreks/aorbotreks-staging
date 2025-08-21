@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'csp',
     'axes',
-    
+    'ckeditor',
     'treks_app',
 ]
 
@@ -209,6 +209,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOWED_ORIGINS = [
     "https://aorbotreks.com",
@@ -302,3 +303,5 @@ if DEBUG:
 SIMPLE_JWT = {
     'TOKEN_OBTAIN_PAIR_SERIALIZER': 'aorbo_project.serializers.MyTokenObtainPairSerializer',
 }
+
+

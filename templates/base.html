@@ -15,10 +15,80 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrapicons@1.10.5/font/bootstrap-icons.css">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% comment %} <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   <link rel="stylesheet" href="{% static 'css/carousel-hover.css' %}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet"> {% endcomment %}
+
+  <!-- Preconnect for faster Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/carousel-hover.css' %}">
+
+<!-- Google Fonts (Inter + Poppins combined) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+<!-- SEO -->  
+
+<!-- Basic Meta -->
+<meta name="description" content="{{ seo.description|default:'Read travel blogs, trekking guides, and adventure stories by Aorbo Treks.' }}">
+<meta name="keywords" content="{{ seo.keywords|default:'trekking, travel, adventure' }}">
+<meta name="author" content="{{ seo.author|default:'Aorbo Treks' }}">
+
+<!-- Open Graph -->
+<meta property="og:title" content="{{ seo.title|default:'Aorbo Treks' }}">
+<meta property="og:description" content="{{ seo.description|default:'Read travel blogs, trekking guides, and adventure stories by Aorbo Treks.' }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ seo.url|default:request.build_absolute_uri }}">
+<meta property="og:image" content="{{ seo.image|default:request.build_absolute_uri|add:'/static/images/default-blog.jpg' }}">
+<meta property="og:site_name" content="Aorbo Treks">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ seo.title|default:'Aorbo Treks' }}">
+<meta name="twitter:description" content="{{ seo.description|default:'Read travel blogs, trekking guides, and adventure stories by Aorbo Treks.' }}">
+<meta name="twitter:image" content="{{ seo.image|default:request.build_absolute_uri|add:'/static/images/default-blog.jpg' }}">
+<meta name="twitter:site" content="@aorbotreks">
+
+<!-- Canonical -->
+<link rel="canonical" href="{{ seo.url|default:request.build_absolute_uri }}">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ seo.title|default:'Aorbo Treks'|escapejs }}",
+  "description": "{{ seo.description|default:'Read travel blogs, trekking guides, and adventure stories by Aorbo Treks.'|escapejs }}",
+  "image": "{{ seo.image|default:request.build_absolute_uri|add:'/static/images/default-blog.jpg' }}",
+  "author": {
+    "@type": "Organization",
+    "name": "{{ seo.author|default:'Aorbo Treks'|escapejs }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Aorbo Treks",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ request.build_absolute_uri }}{% static 'images/R-logo.png' %}",
+      "@id": "{{ request.build_absolute_uri }}#logo"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ seo.url|default:request.build_absolute_uri }}"
+  },
+  "datePublished": "{{ seo.published|date:'Y-m-d' }}",
+  "dateModified": "{{ seo.updated|date:'Y-m-d' }}"
+}
+</script>
+
+
+
 
   {% block extra_css %}{% endblock %}
 </head>

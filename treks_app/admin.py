@@ -70,6 +70,9 @@ class BlogAdmin(admin.ModelAdmin):
         return "-"
     image_preview.short_description = 'Image Preview'
 
+
+
+
 @admin.register(TrekCategory)
 class TrekCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
